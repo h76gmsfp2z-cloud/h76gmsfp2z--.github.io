@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>护理智能软件系统架构图 - 交互式</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c5364 0%, #203a43 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        .architecture {
+            display: flex;
+            flex-direction: column;
+            padding: 40px 20px;
+            gap: 30px;
+        }
+        .layer {
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .layer:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        .layer-header {
+            background: #2c5364;
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .layer-header h2 {
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+        .layer-header .icon {
+            font-size: 1.5em;
+            transition: transform 0.3s ease;
+        }
+        .layer-header.expanded .icon {
+            transform: rotate(45deg);
+        }
+        .layer-content {
+            padding: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+        .layer-content.expanded {
+            max-height: 2000px;
+        }
+        .components {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .component {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .component:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .component h3 {
+            color: #2c5364;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        .component p {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+        .layer-description {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .layer-description h3 {
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+        .layer-description p {
+            color: #37474f;
+            line-height: 1.6;
+        }
+        .layer:nth-child(1) .layer-header {
+            background: #4caf50;
+        }
+        .layer:nth-child(2) .layer-header {
+            background: #2196f3;
+        }
+        .layer:nth-child(3) .layer-header {
+            background: #9c27b0;
+        }
+        .layer:nth-child(4) .layer-header {
+            background: #ff5722;
+        }
+        .dependency {
+            text-align: center;
+            font-size: 1.2em;
+            color: #6c757d;
+            font-weight: 600;
+            padding: 10px;
+        }
+        .dependency::before {
+            content: "↓ ↓ ↓ ↓ ↓";
+            display: block;
+            margin-bottom: 10px;
+            color: #2196f3;
+        }
+        .sub-components {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .sub-component {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+        .non-functional {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffc107;
+        }
+        .non-functional h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        .non-functional ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            color: #856404;
+            line-height: 1.6;
+        }
+        .data-flow {
+            background: #d4edda;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+        }
+        .data-flow h3 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+        .data-flow p {
+            color: #155724;
+            line-height: 1.6;
+        }
+        .implementation {
+            background: #cce5ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+        .implementation h3 {
+            color: #004085;
+            margin-bottom: 10px;
+        }
+        .implementation p {
+            color: #004085;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>护理智能软件系统架构</h1>
+            <p>交互式分层架构图，点击各层级查看详细信息</p>
+        </div>
+        <div class="architecture">
+            <!-- 第1层：感知层 -->
+            <div class="layer">
+                <div class="layer-header" onclick="toggleLayer('layer-1')">
+                    <h2>感知层：多模态数据采集</h2>
+                    <div class="icon">+</div>
+                </div>
+                <div class="layer-content" id="layer-1">
+                    <div class="layer-description">
+                        <h3>功能描述</h3>
+                        <p>负责采集患者生命体征、护理操作等多源数据，是护理智能系统的基础数据入口。</p>
+                    </div>
+                    <div class="non-functional">
+                        <h3>非功能性需求</h3>
+                        <ul>
+                            <li>采样频率：心率传感器每分钟采集100次数据，感知层采样频率不低于5Hz</li>
+                            <li>响应时间：系统应在2秒内响应用户请求，AI预警引擎异常识别准确率≥98.5%，预警延迟≤10秒</li>
+                        </ul>
+                    </div>
+                    <div class="components">
+                        <div class="component">
+                            <h3>生命体征传感器</h3>
+                            <p>采集心率、血压、血氧饱和度等患者生命体征数据，支持多模态数据同步采集。</p>
+                        </div>
+                        <div class="component">
+                            <h3>语音录入设备</h3>
+                            <p>支持护士语音录入护理记录，采用AI语音转写技术，识别准确率≥98.7%，减少护士文书时间57.1%。</p>
+                        </div>
+                        <div class="component">
+                            <h3>摄像头</h3>
+                            <p>用于病房监控、远程会诊等场景，支持实时音视频通信和图像识别功能。</p>
+                        </div>
+                        <div class="component">
+                            <h3>智能手环</h3>
+                            <p>实时监测患者运动状态、睡眠质量等健康数据，提供异常预警功能。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dependency">传输至</div>
+            
+            <!-- 第2层：网络层 -->
+            <div class="layer">
+                <div class="layer-header" onclick="toggleLayer('layer-2')">
+                    <h2>网络层：数据传输与通信</h2>
+                    <div class="icon">+</div>
+                </div>
+                <div class="layer-content" id="layer-2">
+                    <div class="layer-description">
+                        <h3>功能描述</h3>
+                        <p>负责数据传输和通信，确保感知层与平台层、平台层与应用层之间的数据交互安全可靠。</p>
+                    </div>
+                    <div class="implementation">
+                        <h3>实现细节</h3>
+                        <p>采用gRPC、WebSocket、MQTT作为通讯中间件，遵循HL7 FHIR标准开发API接口，支持与医院信息系统（HIS）的T+0级数据同步。</p>
+                    </div>
+                    <div class="components">
+                        <div class="component">
+                            <h3>物联网网关</h3>
+                            <p>实现感知层设备与网络层的连接，支持多种协议转换和数据加密传输。</p>
+                        </div>
+                        <div class="component">
+                            <h3>无线局域网</h3>
+                            <p>提供病房内高速无线通信能力，支持移动设备接入和数据传输。</p>
+                        </div>
+                        <div class="component">
+                            <h3>5G网络</h3>
+                            <p>支持远程会诊、实时数据传输等高速通信需求，提供低时延、高可靠性的网络服务。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dependency">处理于</div>
+            
+            <!-- 第3层：平台层 -->
+            <div class="layer">
+                <div class="layer-header" onclick="toggleLayer('layer-3')">
+                    <h2>平台层：数据存储与分析</h2>
+                    <div class="icon">+</div>
+                </div>
+                <div class="layer-content" id="layer-3">
+                    <div class="layer-description">
+                        <h3>功能描述</h3>
+                        <p>负责数据存储、处理和分析，是护理智能系统的核心支撑层。</p>
+                    </div>
+                    <div class="non-functional">
+                        <h3>非功能性需求</h3>
+                        <ul>
+                            <li>数据加密：采用AES-256位加密算法对数据进行加密传输，存储采用国密SM4算法</li>
+                            <li>身份认证：实施多因素认证机制，结合生物识别、硬件令牌和动态密码</li>
+                            <li>访问控制：基于角色的权限管理（RBAC），权限按角色动态调整</li>
+                        </ul>
+                    </div>
+                    <div class="implementation">
+                        <h3>技术选型</h3>
+                        <p>数据库支持Oracle 10g及以上版本、SQL Server 2005及以上版本；采用Docker容器化技术实现模块快速部署与弹性伸缩；引入联邦学习框架，在本地设备与云端协同训练模型，减少敏感数据外传需求。</p>
+                    </div>
+                    <div class="components">
+                        <div class="component">
+                            <h3>数据存储模块</h3>
+                            <p>存储患者健康数据、护理记录、知识库等信息，支持高并发读写和数据备份恢复。</p>
+                        </div>
+                        <div class="component">
+                            <h3>AI分析引擎</h3>
+                            <p>基于机器学习算法对护理数据进行分析和预测，提供智能预警、护理决策支持等功能。</p>
+                        </div>
+                        <div class="component">
+                            <h3>知识图谱</h3>
+                            <p>构建护理领域知识图谱，支持护理知识检索、智能问答等应用场景。</p>
+                        </div>
+                        <div class="component">
+                            <h3>安全管理模块</h3>
+                            <p>提供数据加密、用户认证、访问控制等安全保障功能，符合医疗行业数据安全标准。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dependency">呈现于</div>
+            
+            <!-- 第4层：应用层 -->
+            <div class="layer">
+                <div class="layer-header" onclick="toggleLayer('layer-4')">
+                    <h2>应用层：护理智能软件系统</h2>
+                    <div class="icon">+</div>
+                </div>
+                <div class="layer-content" id="layer-4">
+                    <div class="layer-description">
+                        <h3>智能核心</h3>
+                        <p>这是实现产品所有业务逻辑和智能功能的最终软件集合，包括AI校验模块、交接班中心等功能，可以专注于用Drools、BERT、GPT-2、Flink等技术来实现复杂的护理业务逻辑。</p>
+                    </div>
+                    <div class="non-functional">
+                        <h3>非功能性需求</h3>
+                        <ul>
+                            <li>系统可用性：99.99%正常运行时间，年度计划外停机<8小时</li>
+                            <li>故障恢复：核心业务RTO≤15分钟，RPO≤5分钟</li>
+                        </ul>
+                    </div>
+                    <div class="implementation">
+                        <h3>业务流程</h3>
+                        <p>护理记录生成：护士在病床前口述护理信息，系统自动转写并生成结构化护理记录，内置医学术语库对记录内容进行术语校验、剂量核对和时间轴锁定，护理记录自动同步至电子病历、护理系统等多个终端。</p>
+                    </div>
+                    <div class="implementation">
+                        <h3>架构演进规划</h3>
+                        <p>阶段性演进路线：短期（1年内）完成核心业务模块云原生改造，实现容器化部署；中期（2-3年）引入AI辅助决策功能，如智能预警、个性化护理方案推荐；长期（3年以上）构建区域医疗协同平台，实现跨机构数据共享与远程护理。</p>
+                    </div>
+                    <div class="implementation">
+                        <h3>容灾备份策略</h3>
+                        <p>实施多层级备份体系，包括全量备份（每周）、增量备份（每日）和差异备份（按需）；建立异地容灾中心，实现核心业务RTO≤15分钟，RPO≤5分钟；定期进行代码审计和漏洞扫描，将系统补丁更新周期压缩至4小时。</p>
+                    </div>
+                    <div class="components">
+                        <div class="component">
+                            <h3>智能采集层</h3>
+                            <div class="sub-components">
+                                <div class="sub-component">多模态数据采集（语音/图像/传感器）</div>
+                                <div class="sub-component">外设集成（生命体征仪/输液泵）</div>
+                            </div>
+                        </div>
+                        <div class="component">
+                            <h3>智能处理层</h3>
+                            <div class="sub-components">
+                                <div class="sub-component">语音识别与语义理解</div>
+                                <div class="sub-component">自然语言生成（护理记录）</div>
+                                <div class="sub-component">风险评估模型</div>
+                            </div>
+                        </div>
+                        <div class="component">
+                            <h3>应用功能层</h3>
+                            <div class="sub-components">
+                                <div class="sub-component">知识图谱与规则引擎</div>
+                                <div class="sub-component">智能护理记录</div>
+                                <div class="sub-component">护理计划管理</div>
+                                <div class="sub-component">任务待办与提醒</div>
+                                <div class="sub-component">交班报告生成</div>
+                                <div class="sub-component">质量监控与闭环</div>
+                                <div class="sub-component">知识库问答</div>
+                                <div class="sub-component">质量监控与改进</div>
+                                <div class="sub-component">智能交接班中心</div>
+                            </div>
+                            <div class="sub-components" style="margin-top: 20px;">
+                                <div class="sub-component" style="background: #e3f2fd; border-left: 4px solid #1565c0;">
+                                    <strong>质量监控与改进说明：</strong><br>
+                                    基于护理工作数据做质量管控，包括实时质检引擎、缺陷定级、实时推送/报表等功能，接收来自护理核心工作流的历史数据/风险评估，同时将质量数据/待办事项、交接发现问题反馈给智能交接班中心。
+                                </div>
+                                <div class="sub-component" style="background: #e3f2fd; border-left: 4px solid #1565c0;">
+                                    <strong>智能交接班中心说明：</strong><br>
+                                    覆盖多场景的交接班工作，包括交接班启动、交接班类型选择、自动生成转科交接单等功能，支持定时提醒/手动触发，分为转运交接、日常交接班、床旁交接班、集体交接班四种类型，最终汇总至双方确认归档，生成交接班报告。
+                                </div>
+                            </div>
+                        </div>
+                        <div class="component">
+                            <h3>数据与记忆层</h3>
+                            <div class="sub-components">
+                                <div class="sub-component">患者健康画像</div>
+                                <div class="sub-component">护理模式库</div>
+                                <div class="sub-component">历史记录库</div>
+                                <div class="sub-component">知识图谱库</div>
+                                <div class="sub-component">行为习惯库（护士个性化）</div>
+                            </div>
+                        </div>
+                        <div class="component">
+                            <h3>系统集成与输出层</h3>
+                            <div class="sub-components">
+                                <div class="sub-component">HIS/EMR/LIS集成（L7 FHIR）</div>
+                                <div class="sub-component">移动护理APP</div>
+                                <div class="sub-component">床旁交互终端</div>
+                                <div class="sub-component">报告导出与共享（PDF/Excel/语音）</div>
+                            </div>
+                            <div class="sub-components" style="margin-top: 20px;">
+                                <div class="sub-component" style="background: #e3f2fd; border-left: 4px solid #1565c0;">
+                                    <strong>HIS/EMR/LIS集成说明：</strong><br>
+                                    遵循HL7 FHIR标准开发API接口，支持与医院信息系统（HIS）的T+0级数据同步，实现不同医疗信息系统之间的数据交互和共享。
+                                </div>
+                            </div>
+                        </div>
+                        <div class="component">
+                            <h3>安全与运维支撑层</h3>
+                            <div class="sub-components">
+                                <div class="sub-component">医疗数据安全</div>
+                                <div class="sub-component">系统可靠性</div>
+                                <div class="sub-component">运维监控</div>
+                                <div class="sub-component">更新与扩展</div>
+                                <div class="sub-component">动态监控模块</div>
+                            </div>
+                            <div class="sub-components" style="margin-top: 20px;">
+                                <div class="sub-component" style="background: #e3f2fd; border-left: 4px solid #1565c0;">
+                                    <strong>医疗数据安全说明：</strong><br>
+                                    符合ISO 27001安全认证标准，采用零信任安全模型，通过同态加密与差分隐私技术保护患者隐私，实施多层级备份体系，包括全量备份（每周）、增量备份（每日）和差异备份（按需），备份数据采用AES-256位加密，传输使用TLS 1.3协议，定期开展恢复演练确保RTO/RPO达标。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dependency">依赖运行于</div>
+            
+            <!-- 第5层：平台服务层 -->
+            <div class="layer">
+                <div class="layer-header" onclick="toggleLayer('layer-5')">
+                    <h2>平台服务层</h2>
+                    <div class="icon">+</div>
+                </div>
+                <div class="layer-content" id="layer-5">
+                    <div class="layer-description">
+                        <h3>运行舞台</h3>
+                        <p>这是现代软件运行的基础环境和公共服务，相当于为应用软件搭建的舞台，包括操作系统、容器与运行时、通讯中间件和安全认证等。</p>
+                    </div>
+                    <div class="implementation">
+                        <h3>技术版本与兼容性</h3>
+                        <p>操作系统：Android/Linux/Windows；数据库：支持Oracle 10g及以上版本、SQL Server 2005及以上版本；浏览器兼容性：支持Chrome≥90、Firefox≥88、iOS 13+/Android 10+；Docker 20.10+、Kubernetes 1.24+、Java 11+、Python 3.9+。</p>
+                    </div>
+                    <div class="implementation">
+                        <h3>选型依据与风险评估</h3>
+                        <p>Docker容器化技术：实现模块快速部署与弹性伸缩；联邦学习框架：在本地设备与云端协同训练模型，减少敏感数据外传需求；风险：传统架构迁移至云原生架构可能面临数据迁移复杂、团队技能不足等问题，需制定详细迁移计划。</p>
+                    </div>
+                    <div class="components">
+                        <div class="component">
+                            <h3>操作系统</h3>
+                            <p>Android/Linux/Windows</p>
+                        </div>
+                        <div class="component">
+                            <h3>容器与运行时</h3>
+                            <p>Docker, Java/Python Runtime</p>
+                        </div>
+                        <div class="component">
+                            <h3>通讯中间件</h3>
+                            <p>gRPC, WebSocket, MQTT</p>
+                        </div>
+                        <div class="component">
+                            <h3>安全与认证</h3>
+                            <p>TLS/SSL, OAuth 2.0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dependency">通过API调用</div>
+            
+            <!-- 第6层：硬件抽象与驱动层 -->
+            <div class="layer">
+                <div class="layer-header" onclick="toggleLayer('layer-6')">
+                    <h2>硬件抽象与驱动层</h2>
+                    <div class="icon">+</div>
+                </div>
+                <div class="layer-content" id="layer-6">
+                    <div class="layer-description">
+                        <h3>翻译控制器</h3>
+                        <p>这是一系列特殊的软件（驱动程序和基础库），是专为上层软件与五花八门的硬件打交道的“翻译官”和“控制器”。</p>
+                    </div>
+                    <div class="implementation">
+                        <h3>硬件抽象与驱动层说明</h3>
+                        <p>该层包括传感器驱动、摄像头驱动、语音设备驱动等，负责将硬件设备的原始数据转换为上层软件可以理解的格式，实现硬件设备与上层软件之间的交互。</p>
+                    </div>
+                    <div class="components">
+                        <div class="component">
+                            <h3>音频驱动与处理库</h3>
+                            <p>ALSA/PulseAudio</p>
+                        </div>
+                        <div class="component">
+                            <h3>摄像头驱动与图像库</h3>
+                            <p>V4L2, OpenCV</p>
+                        </div>
+                        <div class="component">
+                            <h3>蓝牙/串口通信驱动</h3>
+                            <p>BlueZ, Serial API</p>
+                        </div>
+                        <div class="component">
+                            <h3>触摸屏与GUI框架驱动</h3>
+                            <p>Libinput, Qt/Android UI</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dependency">直接控制</div>
+            
+            <!-- 第7层：硬件层 -->
+            <div class="layer">
+                <div class="layer-header" onclick="toggleLayer('layer-7')">
+                    <h2>硬件层：物理设备组件</h2>
+                    <div class="icon">+</div>
+                </div>
+                <div class="layer-content" id="layer-7">
+                    <div class="layer-description">
+                        <h3>物理基石</h3>
+                        <p>这是看得见、摸得着的物理设备，是系统所有功能的物理承载者，包括多模态采集终端、核心计算单元、网络与通信单元和电源与辅助单元。</p>
+                    </div>
+                    <div class="implementation">
+                        <h3>硬件层说明</h3>
+                        <p>该层包括生命体征传感器、摄像头、语音录入设备、智能手环等硬件设备，负责采集患者生命体征、护理操作等多源数据，为护理智能系统提供基础数据支持。</p>
+                    </div>
+                    <div class="components">
+                        <div class="component">
+                            <h3>多模态采集终端</h3>
+                            <div class="sub-components">
+                                <div class="sub-component">4麦麦克风阵列ReSpeaker</div>
+                                <div class="sub-component">1080P摄像头模组OV2710</div>
+                                <div class="sub-component">7英寸触控显示屏1280x800</div>
+                            </div>
+                        </div>
+                        <div class="component">
+                            <h3>核心计算单元</h3>
+                            <div class="sub-components">
+                                <div class="sub-component">主处理器ARM Cortex-A系列/ x86</div>
+                                <div class="sub-component">内存4GB+ RAM</div>
+                                <div class="sub-component">存储64GB+ eMMC/SSD</div>
+                            </div>
+                        </div>
+                        <div class="component">
+                            <h3>网络与通信单元</h3>
+                            <div class="sub-components">
+                                <div class="sub-component">Wi-Fi/蓝牙5.0模块</div>
+                                <div class="sub-component">千兆以太网口</div>
+                            </div>
+                        </div>
+                        <div class="component">
+                            <h3>电源与辅助单元</h3>
+                            <div class="sub-components">
+                                <div class="sub-component">锂电池与管理电路</div>
+                                <div class="sub-component">散热风扇/金属外壳</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleLayer(layerId) {
+            const layer = document.getElementById(layerId);
+            const header = layer.parentElement.querySelector('.layer-header');
+            const icon = header.querySelector('.icon');
+            
+            if (layer.classList.contains('expanded')) {
+                layer.classList.remove('expanded');
+                header.classList.remove('expanded');
+                icon.textContent = '+';
+            } else {
+                layer.classList.add('expanded');
+                header.classList.add('expanded');
+                icon.textContent = '−';
+            }
+        }
+        
+        // 默认展开应用层
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleLayer('layer-4');
+        });
+    </script>
+</body>
+</html>
